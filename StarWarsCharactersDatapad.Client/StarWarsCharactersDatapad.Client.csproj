@@ -12,4 +12,14 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.13" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Application\Abstractions\" />
+    <Folder Include="Application\DTOs\" />
+    <Folder Include="Application\UseCases\" />
+    <Folder Include="Components\" />
+    <Folder Include="Infrastructure\Models\" />
+    <Folder Include="Infrastructure\Helpers\" />
+    <Folder Include="Infrastructure\Services\" />
+  </ItemGroup>
+
 </Project>
