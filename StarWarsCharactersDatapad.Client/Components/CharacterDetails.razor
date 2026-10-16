@@ -1,0 +1,76 @@
+﻿@using StarWarsCharactersDatapad.Client.Application.DTOs
+
+@if (Character is not null)
+{
+    <div class="character-details-panel">
+        <div class="character-header">
+            <div class="character-avatar">
+                <span>👤</span>
+            </div>
+            <h2>@Character.Name</h2>
+        </div>
+
+        <div class="details-grid">
+            <section>
+                <h3>ATTRIBUTES</h3>
+                <DetailCard Title="Attributes"
+                            Details="@Attributes" />
+            </section>
+
+            <section>
+                <h3>SPECIES</h3>
+                <DetailCard Title="@SpeciesName"
+                            Details="@SpeciesDetails" />
+            </section>
+
+            <section>
+                <h3>HOMEWORLD</h3>
+                <DetailCard Title="@HomeworldName"
+                            Details="@HomeworldDetails" />
+            </section>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public CharacterDetailsDto? Character { get; set; }
+
+    private IReadOnlyDictionary<string, string?> Attributes =>
+        new Dictionary<string, string?>
+        {
+            ["Birth year"] = Character?.BirthYear,
+            ["Gender"] = Character?.Gender,
+            ["Height"] = Character?.Height,
+            ["Mass"] = Character?.Mass,
+            ["Eye color"] = Character?.EyeColor,
+            ["Hair color"] = Character?.HairColor,
+            ["Skin color"] = Character?.SkinColor
+        };
+
+    private SpeciesDto? Species =>
+        Character?.Species?.FirstOrDefault();
+
+    private string SpeciesName =>
+        Species?.Name ?? "Unknown";
+
+    private IReadOnlyDictionary<string, string?> SpeciesDetails =>
+        new Dictionary<string, string?>
+        {
+            ["Classification"] = Species?.Classification,
+            ["Designation"] = Species?.Designation,
+            ["Average height"] = Species?.AverageHeight,
+            ["Language"] = Species?.Language
+        };
+
+    private string HomeworldName =>
+        Character?.Homeworld?.Name ?? "Unknown";
+
+    private IReadOnlyDictionary<string, string?> HomeworldDetails =>
+        new Dictionary<string, string?>
+        {
+            ["Climate"] = Character?.Homeworld?.Climate,
+            ["Terrain"] = Character?.Homeworld?.Terrain,
+            ["Population"] = Character?.Homeworld?.Population
+        };
+}

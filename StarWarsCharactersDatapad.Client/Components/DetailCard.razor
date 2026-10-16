@@ -1,0 +1,29 @@
+﻿
+<div class="detail-card">
+    <div class="detail-card-header">
+        @Title
+    </div>
+
+    <div class="detail-card-content">
+        @foreach (var item in Details)
+        {
+            <div class="detail-row">
+                <span class="detail-label">@item.Key</span>
+                <span class="detail-value">
+                    @(string.IsNullOrWhiteSpace(item.Value)
+                        ? "Unknown"
+                        : item.Value)
+                </span>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public IReadOnlyDictionary<string, string?> Details { get; set; }
+        = new Dictionary<string, string?>();
+}

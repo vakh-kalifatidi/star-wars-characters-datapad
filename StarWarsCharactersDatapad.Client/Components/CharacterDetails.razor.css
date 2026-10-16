@@ -1,0 +1,55 @@
+﻿
+.character-details-panel {
+    padding: 24px 28px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.character-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.character-avatar {
+    width: 56px;
+    height: 56px;
+    border: 1px solid #aaa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.character-header h2 {
+    font-size: 20px;
+    margin: 0;
+    color: #243a43;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+}
+
+    .details-grid section {
+        min-width: 0;
+    }
+
+    .details-grid h3 {
+        font-size: 12px;
+        margin: 0 0 8px;
+        font-weight: 700;
+        color: #243a43;
+    }
+
+@media (max-width: 900px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}

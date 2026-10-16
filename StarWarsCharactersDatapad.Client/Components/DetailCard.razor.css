@@ -1,0 +1,37 @@
+﻿
+.detail-card {
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background: #fff;
+    height: 100%;
+    overflow: hidden;
+}
+
+.detail-card-header {
+    padding: 10px 12px;
+    border-bottom: 1px solid #d0d0d0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #243a43;
+}
+
+.detail-card-content {
+    padding: 8px 12px;
+}
+
+.detail-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+    padding: 5px 0;
+    font-size: 12px;
+}
+
+.detail-label {
+    color: #344954;
+}
+
+.detail-value {
+    color: #243a43;
+    overflow-wrap: anywhere;
+}

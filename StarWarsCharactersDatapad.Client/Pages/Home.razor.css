@@ -1,0 +1,29 @@
+﻿
+.character-browser {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+    width: 100%;
+}
+
+.character-sidebar {
+    min-width: 0;
+}
+
+    .character-sidebar h3 {
+        font-size: 12px;
+        font-weight: 700;
+        margin: 0 0 8px;
+    }
+
+.character-details {
+    min-width: 0;
+}
+
+/* Stack columns only on smaller screens */
+@media (max-width: 700px) {
+    .character-browser {
+        grid-template-columns: 1fr;
+    }
+}
