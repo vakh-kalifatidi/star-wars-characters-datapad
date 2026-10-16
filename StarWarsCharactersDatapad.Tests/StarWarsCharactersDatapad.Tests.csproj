@@ -23,10 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Components\" />
-    <Folder Include="Fakes\" />
   </ItemGroup>
 
 </Project>

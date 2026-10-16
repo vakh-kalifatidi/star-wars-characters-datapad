@@ -1,4 +1,5 @@
-﻿using StarWarsCharactersDatapad.Client.Application.DTOs;
+﻿using StarWarsCharactersDatapad.Client.Application.Abstractions;
+using StarWarsCharactersDatapad.Client.Application.DTOs;
 using StarWarsCharactersDatapad.Client.Infrastructure.Models;
 using System.Net;
 using System.Net.Http.Json;
@@ -7,7 +8,7 @@ using static StarWarsCharactersDatapad.Client.Infrastructure.Helpers.SwapiDataHe
 
 namespace StarWarsCharactersDatapad.Client.Infrastructure.Services;
 
-public sealed class SwapiDataProvider(HttpClient httpClient)
+public sealed class SwapiDataProvider(HttpClient httpClient) : IStarWarsDataProvider
 {
     public async Task<IReadOnlyList<CharacterDto>> GetCharactersAsync(string? search = null,
         CancellationToken cancellationToken = default)
