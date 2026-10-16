@@ -6,14 +6,30 @@
 
 @inject IStarWarsDataProvider DataProvider
 
+<div class="search-bar">
+    <input type="search"
+           class="search-input"
+           placeholder="Search characters..."
+           aria-label="Search characters"
+           value="@SearchText"
+           @oninput="OnSearchInput" />
+</div>
+
 <div class="character-browser">
     <aside class="character-sidebar">
         <h3>CHARACTERS</h3>
 
-        <CharacterList
-            Characters="@Characters"
-            SelectedCharacterId="@SelectedCharacterId"
-            OnCharacterSelected="@SelectCharacterAsync" />
+        @if (Characters.Count == 0)
+        {
+            <p>No characters found.</p>
+        }
+        else
+        {
+            <CharacterList Characters="@Characters"
+                           SelectedCharacterId="@SelectedCharacterId"
+                           OnCharacterSelected="@SelectCharacterAsync" />
+        }
+
     </aside>
 
     <section class="character-details">
@@ -21,8 +37,8 @@
     </section>
 </div>
 
-<FilmsSection Films="@(SelectedCharacter?.Films ?? Array.Empty<FilmDto>())" />
 
+<FilmsSection Films="@(SelectedCharacter?.Films ?? Array.Empty<FilmDto>())" />
 
 <div class="transport-grid">
     <TransportSection Title="STARSHIPS"
@@ -36,6 +52,53 @@
 
 
 @code {
+
+    
+    private CancellationTokenSource? _searchCts;
+
+    private async Task OnSearchInput(ChangeEventArgs e)
+    {
+        SearchText = e.Value?.ToString() ?? string.Empty;
+
+        _searchCts?.Cancel();
+        _searchCts?.Dispose();
+
+        var cts = new CancellationTokenSource();
+        _searchCts = cts;
+
+        try
+        {
+            // Wait until the user stops typing.
+            await Task.Delay(300, cts.Token);
+
+            var characters = await DataProvider.GetCharactersAsync(
+                string.IsNullOrWhiteSpace(SearchText)
+                    ? null
+                    : SearchText,
+                cts.Token);
+
+            if (!cts.IsCancellationRequested)
+            {
+                Characters = characters;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when a newer search supersedes this one.
+        }
+        catch (Exception)
+        {
+            // Error state will be implemented in Step 7.
+            if (!cts.IsCancellationRequested)
+            {
+                Characters = Array.Empty<CharacterDto>();
+            }
+        }
+    }
+
+
+    private string SearchText { get; set; } = string.Empty;
+
     private IReadOnlyList<CharacterDto> Characters =
         Array.Empty<CharacterDto>();
 
