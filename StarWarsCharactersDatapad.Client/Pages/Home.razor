@@ -1,7 +1,45 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+@using StarWarsCharactersDatapad.Client.Application.Abstractions
+@using StarWarsCharactersDatapad.Client.Application.DTOs
+@using StarWarsCharactersDatapad.Client.Components
 
-<h1>Hello, world!</h1>
+@inject IStarWarsDataProvider DataProvider
 
-Welcome to your new app.
+<div class="character-browser">
+    <aside class="character-sidebar">
+        <h3>CHARACTERS</h3>
+
+        <CharacterList
+            Characters="@Characters"
+            SelectedCharacterId="@SelectedCharacterId"
+            OnCharacterSelected="@SelectCharacterAsync" />
+    </aside>
+
+    <section class="character-details">
+        @* Character details will be implemented in Step 3 *@
+    </section>
+</div>
+
+@code {
+    private IReadOnlyList<CharacterDto> Characters =
+        Array.Empty<CharacterDto>();
+
+    private string? SelectedCharacterId;
+
+    private CharacterDetailsDto? SelectedCharacter;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Characters = await DataProvider.GetCharactersAsync();
+    }
+
+    private async Task SelectCharacterAsync(string id)
+    {
+        SelectedCharacterId = id;
+
+        SelectedCharacter =
+            await DataProvider.GetCharacterDetailsAsync(id);
+    }
+}
+

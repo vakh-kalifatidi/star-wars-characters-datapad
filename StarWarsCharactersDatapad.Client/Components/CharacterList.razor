@@ -1,0 +1,27 @@
+﻿@using StarWarsCharactersDatapad.Client.Application.DTOs
+
+<div class="character-list">
+    @foreach (var character in Characters)
+    {
+        <button type="button"
+                class="character-item @(character.Id == SelectedCharacterId ? "selected" : "")"
+                @onclick="() => SelectCharacter(character.Id)">
+            @character.Name
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<CharacterDto> Characters { get; set; }
+        = Array.Empty<CharacterDto>();
+
+    [Parameter]
+    public string? SelectedCharacterId { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnCharacterSelected { get; set; }
+
+    private Task SelectCharacter(string id)
+        => OnCharacterSelected.InvokeAsync(id);
+}
