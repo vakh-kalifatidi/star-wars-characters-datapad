@@ -21,6 +21,8 @@
     </section>
 </div>
 
+<FilmsSection Films="@(SelectedCharacter?.Films ?? Array.Empty<FilmDto>())" />
+
 @code {
     private IReadOnlyList<CharacterDto> Characters =
         Array.Empty<CharacterDto>();

@@ -1,0 +1,34 @@
+﻿@using StarWarsCharactersDatapad.Client.Application.DTOs
+
+<section class="films-section">
+    <h3>FILMS</h3>
+
+    @if (Films is null || Films.Count == 0)
+    {
+        <p class="empty-message">No films available.</p>
+    }
+    else
+    {
+        <div class="films-gallery">
+            @foreach (var film in Films.OrderBy(f => f.EpisodeId))
+            {
+                <div class="film-item">
+                    <div class="film-poster">
+                        <span class="poster-placeholder">🎬</span>
+                    </div>
+
+                    <div class="film-title">@film.Title</div>
+                    <div class="film-episode">
+                        Episode @film.EpisodeId
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<FilmDto> Films { get; set; }
+        = Array.Empty<FilmDto>();
+}
