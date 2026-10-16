@@ -1,5 +1,5 @@
 ﻿namespace StarWarsCharactersDatapad.Client.Infrastructure.Services;
 
-public sealed class SwapiDataProvider
+public sealed class SwapiDataProvider()
 {
 }
