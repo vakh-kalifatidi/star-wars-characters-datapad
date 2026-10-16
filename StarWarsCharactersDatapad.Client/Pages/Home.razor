@@ -23,6 +23,18 @@
 
 <FilmsSection Films="@(SelectedCharacter?.Films ?? Array.Empty<FilmDto>())" />
 
+
+<div class="transport-grid">
+    <TransportSection Title="STARSHIPS"
+                      Transports="@(SelectedCharacter?.Starships
+                      ?? Array.Empty<TransportDto>())" />
+
+    <TransportSection Title="VEHICLES"
+                      Transports="@(SelectedCharacter?.Vehicles
+                      ?? Array.Empty<TransportDto>())" />
+</div>
+
+
 @code {
     private IReadOnlyList<CharacterDto> Characters =
         Array.Empty<CharacterDto>();

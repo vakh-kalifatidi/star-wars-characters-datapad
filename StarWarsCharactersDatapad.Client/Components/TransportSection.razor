@@ -1,0 +1,46 @@
+﻿@using StarWarsCharactersDatapad.Client.Application.DTOs
+
+<section class="transport-section">
+    <h3>@Title</h3>
+
+    <div class="transport-list">
+        @if (Transports is null || Transports.Count == 0)
+        {
+            <p class="empty-message">No information available.</p>
+        }
+        else
+        {
+            @foreach (var transport in Transports)
+            {
+                <div class="transport-item">
+                    <div class="transport-icon">
+                        <span>✦</span>
+                    </div>
+
+                    <div class="transport-info">
+                        <div class="transport-name">
+                            @transport.Name
+                        </div>
+
+                        <div class="transport-description">
+                            @transport.Model
+                        </div>
+
+                        <div class="transport-description">
+                            @transport.Classification
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public IReadOnlyList<TransportDto> Transports { get; set; }
+        = Array.Empty<TransportDto>();
+}
