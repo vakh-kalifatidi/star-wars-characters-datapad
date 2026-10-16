@@ -21,20 +21,18 @@
 
         @if (IsCharactersLoading)
         {
-            <p role="status">Loading characters...</p>
+            <ContentState Message="Loading characters..."
+                          IsLoading="true" />
         }
         else if (CharactersError is not null)
         {
-            <div role="alert">
-                <p>@CharactersError</p>
-                <button type="button" @onclick="LoadCharactersAsync">
-                    Retry
-                </button>
-            </div>
+            <ContentState Message="@CharactersError"
+                          IsError="true"
+                          OnRetry="@LoadCharactersAsync" />
         }
         else if (Characters.Count == 0)
         {
-            <p>No characters found.</p>
+            <ContentState Message="No characters found." />
         }
         else
         {
@@ -50,18 +48,14 @@
 
         @if (IsDetailsLoading)
         {
-            <p role="status">Loading character details...</p>
+            <ContentState Message="Loading character details..."
+                          IsLoading="true" />
         }
         else if (DetailsError is not null)
         {
-            <div role="alert">
-                <p>@DetailsError</p>
-
-                <button type="button"
-                        @onclick="RetryDetailsAsync">
-                    Retry
-                </button>
-            </div>
+            <ContentState Message="@DetailsError"
+                          IsError="true"
+                          OnRetry="@RetryDetailsAsync" />
         }
         else if (SelectedCharacter is not null)
         {
@@ -69,7 +63,7 @@
         }
         else
         {
-            <p>Select a character to view details.</p>
+            <ContentState Message="Select a character to view details." />
         }
 
     </section>
