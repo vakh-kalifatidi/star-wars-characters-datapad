@@ -3,7 +3,7 @@
     border: 1px solid #d0d0d0;
     border-radius: 4px;
     background: #fff;
-    height: 100%;
+    min-height: 180px;
     overflow: hidden;
 }
 

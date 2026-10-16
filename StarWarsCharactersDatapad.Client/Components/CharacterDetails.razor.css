@@ -34,18 +34,19 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 28px;
+    padding-bottom: 8px;
 }
 
-    .details-grid section {
-        min-width: 0;
-    }
+.details-grid section {
+    min-width: 0;
+}
 
-    .details-grid h3 {
-        font-size: 12px;
-        margin: 0 0 8px;
-        font-weight: 700;
-        color: #243a43;
-    }
+.details-grid h3 {
+    font-size: 12px;
+    margin: 0 0 8px;
+    font-weight: 700;
+    color: #243a43;
+}
 
 @media (max-width: 900px) {
     .details-grid {

@@ -6,14 +6,23 @@
 
 @inject IStarWarsDataProvider DataProvider
 
-<div class="search-bar">
-    <input type="search"
-           class="search-input"
-           placeholder="Search characters..."
-           aria-label="Search characters"
-           value="@SearchText"
-           @oninput="OnSearchInput" />
-</div>
+
+<header class="page-header">
+    <div class="page-header-content">
+        <span class="page-title">
+            Star Wars Character Datapad
+        </span>
+
+        <input type="search"
+               class="search-input"
+               placeholder="Search characters..."
+               aria-label="Search characters"
+               value="@SearchText"
+               @oninput="OnSearchInput" />
+    </div>
+</header>
+
+<div class="page-body">
 
 <div class="character-browser">
     <aside class="character-sidebar">
@@ -84,7 +93,7 @@
                       ?? Array.Empty<TransportDto>())" />
 </div>
 
-
+</div>
 
 @implements IDisposable
 
