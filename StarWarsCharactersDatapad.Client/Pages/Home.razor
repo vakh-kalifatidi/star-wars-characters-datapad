@@ -19,7 +19,20 @@
     <aside class="character-sidebar">
         <h3>CHARACTERS</h3>
 
-        @if (Characters.Count == 0)
+        @if (IsCharactersLoading)
+        {
+            <p role="status">Loading characters...</p>
+        }
+        else if (CharactersError is not null)
+        {
+            <div role="alert">
+                <p>@CharactersError</p>
+                <button type="button" @onclick="LoadCharactersAsync">
+                    Retry
+                </button>
+            </div>
+        }
+        else if (Characters.Count == 0)
         {
             <p>No characters found.</p>
         }
@@ -32,9 +45,36 @@
 
     </aside>
 
+
     <section class="character-details">
-        <CharacterDetails Character="@SelectedCharacter" />
+
+        @if (IsDetailsLoading)
+        {
+            <p role="status">Loading character details...</p>
+        }
+        else if (DetailsError is not null)
+        {
+            <div role="alert">
+                <p>@DetailsError</p>
+
+                <button type="button"
+                        @onclick="RetryDetailsAsync">
+                    Retry
+                </button>
+            </div>
+        }
+        else if (SelectedCharacter is not null)
+        {
+            <CharacterDetails Character="@SelectedCharacter" />
+        }
+        else
+        {
+            <p>Select a character to view details.</p>
+        }
+
     </section>
+
+
 </div>
 
 
@@ -51,72 +91,200 @@
 </div>
 
 
+
+@implements IDisposable
+
 @code {
+    private IReadOnlyList<CharacterDto> Characters =
+        Array.Empty<CharacterDto>();
 
-    
+    private string SearchText = string.Empty;
+
+    private string? SelectedCharacterId;
+    private CharacterDetailsDto? SelectedCharacter;
+
+    private bool IsCharactersLoading;
+    private string? CharactersError;
+
+    private bool IsDetailsLoading;
+    private string? DetailsError;
+
     private CancellationTokenSource? _searchCts;
+    private CancellationTokenSource? _detailsCts;
 
-    private async Task OnSearchInput(ChangeEventArgs e)
+    private bool _disposed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCharactersAsync();
+    }
+
+    // -----------------------------------------
+    // Character list: initial load and retry
+    // -----------------------------------------
+
+    private Task LoadCharactersAsync()
+    {
+        return SearchCharactersAsync(SearchText, debounce: false);
+    }
+
+    // -----------------------------------------
+    // Search input
+    // -----------------------------------------
+
+    private Task OnSearchInput(ChangeEventArgs e)
     {
         SearchText = e.Value?.ToString() ?? string.Empty;
 
+        return SearchCharactersAsync(SearchText, debounce: true);
+    }
+
+    // -----------------------------------------
+    // Unified character search
+    // -----------------------------------------
+
+    private async Task SearchCharactersAsync(
+        string search,
+        bool debounce)
+    {
+        // Cancel the previous search.
         _searchCts?.Cancel();
-        _searchCts?.Dispose();
 
         var cts = new CancellationTokenSource();
         _searchCts = cts;
 
         try
         {
-            // Wait until the user stops typing.
-            await Task.Delay(300, cts.Token);
+            if (debounce)
+            {
+                await Task.Delay(300, cts.Token);
+            }
+
+            if (cts.IsCancellationRequested || _disposed)
+                return;
+
+            IsCharactersLoading = true;
+            CharactersError = null;
 
             var characters = await DataProvider.GetCharactersAsync(
-                string.IsNullOrWhiteSpace(SearchText)
+                string.IsNullOrWhiteSpace(search)
                     ? null
-                    : SearchText,
+                    : search,
                 cts.Token);
 
-            if (!cts.IsCancellationRequested)
+            if (!cts.IsCancellationRequested && !_disposed)
             {
                 Characters = characters;
             }
         }
         catch (OperationCanceledException)
+            when (cts.IsCancellationRequested)
         {
-            // Expected when a newer search supersedes this one.
+            // Superseded by a newer request.
         }
         catch (Exception)
         {
-            // Error state will be implemented in Step 7.
-            if (!cts.IsCancellationRequested)
+            if (!cts.IsCancellationRequested && !_disposed)
             {
-                Characters = Array.Empty<CharacterDto>();
+                CharactersError =
+                    "Unable to load characters. Please try again.";
             }
+        }
+        finally
+        {
+            if (ReferenceEquals(_searchCts, cts))
+            {
+                IsCharactersLoading = false;
+                _searchCts = null;
+            }
+
+            cts.Dispose();
         }
     }
 
-
-    private string SearchText { get; set; } = string.Empty;
-
-    private IReadOnlyList<CharacterDto> Characters =
-        Array.Empty<CharacterDto>();
-
-    private string? SelectedCharacterId;
-
-    private CharacterDetailsDto? SelectedCharacter;
-
-    protected override async Task OnInitializedAsync()
-    {
-        Characters = await DataProvider.GetCharactersAsync();
-    }
+    // -----------------------------------------
+    // Character selection
+    // -----------------------------------------
 
     private async Task SelectCharacterAsync(string id)
     {
-        SelectedCharacterId = id;
+        _detailsCts?.Cancel();
 
-        SelectedCharacter =
-            await DataProvider.GetCharacterDetailsAsync(id);
+        var cts = new CancellationTokenSource();
+        _detailsCts = cts;
+
+        SelectedCharacterId = id;
+        SelectedCharacter = null;
+
+        IsDetailsLoading = true;
+        DetailsError = null;
+
+        try
+        {
+            var details =
+                await DataProvider.GetCharacterDetailsAsync(
+                    id, cts.Token);
+
+            if (!cts.IsCancellationRequested && !_disposed)
+            {
+                SelectedCharacter = details;
+
+                if (details is null)
+                {
+                    DetailsError =
+                        "Character details not found.";
+                }
+            }
+        }
+        catch (OperationCanceledException)
+            when (cts.IsCancellationRequested)
+        {
+            // Superseded by a newer selection.
+        }
+        catch (Exception)
+        {
+            if (!cts.IsCancellationRequested && !_disposed)
+            {
+                DetailsError =
+                    "Unable to load character details. Please try again.";
+            }
+        }
+        finally
+        {
+            if (ReferenceEquals(_detailsCts, cts))
+            {
+                IsDetailsLoading = false;
+                _detailsCts = null;
+            }
+
+            cts.Dispose();
+        }
+    }
+
+    // -----------------------------------------
+    // Retry character details
+    // -----------------------------------------
+
+    private Task RetryDetailsAsync()
+    {
+        return SelectedCharacterId is null
+            ? Task.CompletedTask
+            : SelectCharacterAsync(SelectedCharacterId);
+    }
+
+    // -----------------------------------------
+    // Component cleanup
+    // -----------------------------------------
+
+    public void Dispose()
+    {
+        _disposed = true;
+
+        _searchCts?.Cancel();
+        _detailsCts?.Cancel();
+
+        // Each running operation disposes its own CTS
+        // in its finally block.
     }
 }
 
