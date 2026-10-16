@@ -23,4 +23,17 @@ public sealed class GetCharactersTests
         Assert.Equal(2, result.Count);
         Assert.Equal("Luke Skywalker", result[0].Name);
     }
+
+    [Fact]
+    public async Task ExecuteAsync_PassesSearchToProvider()
+    {
+        var provider = new FakeSwapiDataProvider();
+
+        var useCase = new GetCharacters(provider);
+
+        await useCase.ExecuteGetCharacters("Luke");
+
+        Assert.Equal("Luke", provider.UsedSearch);
+    }
+
 }
